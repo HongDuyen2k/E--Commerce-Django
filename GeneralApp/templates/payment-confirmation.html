@@ -1,0 +1,99 @@
+{% extends 'common/index.html' %}
+{% load static %}
+{% load humanize %}
+{% load django_template_maths %}
+{% load custom_cart_tags %}
+
+{% block content %}
+
+<div class="breadcrumb-area">
+    <div class="container">
+        <div class="breadcrumb-content">
+            <ul>
+                <li><a href="{% url 'general_home' %}">Trang chủ</a></li>
+                <li class="active">Đặt hàng</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="checkout-area pt-60 pb-30">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="coupon-accordion">
+                    <h3>
+                        - Họ và tên: {{ user.first_name }} {{ user.last_name }}<br><br>
+                        - Số điện thoại: {{ user.userprofile.phone }}<br><br>
+                        - Địa chỉ: {{ user.useraddress.full_address }}<br><br>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 col-12">
+                <form method="POST" action="{% url 'payment_now' %}">
+                    {% csrf_token %}
+                    <div class="checkbox-form">
+                        <h3>Hình thức thanh toán sản phẩm</h3>
+                        <div class="row">
+                       
+                            <div class="col-md-6">
+                                <h5>Hình thức thanh toán</h5>
+                                <select class="nice-select" name="payment">
+                                    <option value="Cash">Thanh toán khi nhận được sản phẩm</option>
+                                    <option value="Credit">Thanh toán online</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-outline-info mt-3 w-100">Thanh toán</button>
+                        </div>  
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-6 col-12">
+                <div class="your-order">
+                    <h3>Chi tiết sản phẩm</h3>
+                    <div class="your-order-table table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="cart-product-name">Tên sản phẩm</th>
+                                    <th class="cart-product-total">Giá</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for v in all_cart_details %}
+                                    <tr class="cart_item">
+                                        <td class="cart-product-name">{{ v.name }}<strong class="product-quantity"> x {{ v.quantity }}</strong></td>
+                                        <td class="cart-product-total"><span class="amount">{{ v.price|mul:v.quantity|intcomma }}<sup>đ</sup></span></td>  
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr class="order-total">
+                                    <th>Tổng tiền sản phẩm:</th>
+                                    <td><span class="amount">{{ total_amount_before|intcomma }} VND</span></td>
+                                </tr>
+                                <tr class="order-total">
+                                    <th>Voucher:</th>
+                                    <td><span class="amount">{{ voucherPrice }} </span></td>
+                                </tr>
+                                <tr class="order-total">
+                                    <th>Hình thức vận chuyển:</th>
+                                    <td><span class="amount">{{ shipment.name }} - Giá: {{ shipment.price|intcomma }}<sup>VND</sup></span></td>
+                                </tr>
+                                <tr class="order-total">
+                                    <th>Tổng tiền phải thanh toán:</th>
+                                    <td><strong><span class="amount">{{ total_amount_after }} VND</span></strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>      
+
+            
+{% endblock content %}
