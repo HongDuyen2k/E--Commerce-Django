@@ -300,6 +300,10 @@ class Order(models.Model):
     def __str__(self):
         return self.subject
 
+class OrderCart(models.Model):
+    order = models.ForeignKey(Order, null=True, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, null=True, on_delete=models.CASCADE)
+
 #################################
 #####      Payment    ###########
 #################################

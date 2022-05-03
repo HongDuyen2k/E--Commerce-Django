@@ -8,12 +8,19 @@ def payment_now(request):
     current_uer = request.user
     if option == 'Cash':
         carts = Cart.objects.filter(user_id=current_uer.id, status='Draft')
+        order = Order.objects.get(user_id=current_uer.id, status='Draft')
+        
         for cart in carts:
             data= Cart.objects.get(id=cart.id)
+
+            order_cart = OrderCart()
+            order_cart.order_id = order.id
+            order_cart.cart_id = data.id
+            order_cart.save()
+            
             data.status = 'Done'
             data.save()
         
-        order = Order.objects.get(user_id=current_uer.id, status='Draft')
         payment = Payment()
         payment.codeBill = get_random_string(length=32)
         payment.price = order.totalPriceAfter
