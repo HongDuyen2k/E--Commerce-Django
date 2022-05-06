@@ -37,6 +37,7 @@ urlpatterns = [
     ## OrderApp
     path('order/order-cart-product', order_cart_product, name='order_cart_product'),
     path('order/order-confirm-before', order_confirm_before, name='order_confirm_before'),
+    path('order/order-details', order_details, name='order_detail'),
 
     ## CategoryApp
     path('category/category-show/<str:category>/<int:id>', category_show_by_category, name='category_show_by_category'),
@@ -45,13 +46,11 @@ urlpatterns = [
     path('feedback/feedback-add/<str:category>/<int:id>', feedback_add, name='feedback_add'),
 
     ## PaymentApp
-    path('payment/payment-now', payment_now, name='payment_now'),
-    # path('payment/create-payment-intent/<pk>/', StripeIntentView.as_view(), name='create-payment-intent'),
-    # path('payment/webhooks/stripe/', stripe_webhook, name='stripe-webhook'),
-    # path('payment/cancel/', CancelView.as_view(), name='cancel'),
-    # path('payment/success/', SuccessView.as_view(), name='success'),
-    # path('payment/', ProductLandingPageView.as_view(), name='landing-page'),
-    # path('payment/create-checkout-session/<pk>/', CreateCheckoutSessionView.as_view(), name='create-checkout-session')
+    path('payment/payment-now', payment_success, name='payment_now'),
+    path('webhooks/stripe/', stripe_webhook, name='stripe-webhook'),
+    path('payment-cancel/', payment_cancel, name='payment_cancel'),
+    path('payment-success/', payment_success, name='payment_success'),
+    path('create-checkout-session/<pk>/', CreateCheckoutSessionView.as_view(), name='create-checkout-session'),
 ]
 
 if settings.DEBUG:

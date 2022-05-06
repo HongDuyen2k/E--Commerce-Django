@@ -2,6 +2,10 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from models.models import *
+import stripe
+from django.conf import settings
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Create your views here.
 
@@ -75,6 +79,17 @@ def order_confirm_before(request):
         'total_amount_before': total_amount_before,
         'total_amount_after': total_amount_after,
         'voucher_price': voucherPrice,
-        'shipment': shipment
+        'shipment': shipment,
+        'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY,
     }
     return render(request, 'payment-confirmation.html', context)
+
+@login_required(login_url='/user/user-login')
+def order_details(request):
+    current_user = request.user
+    orders = Order.objects.filter(user_id=current_user.id)
+
+    context = {
+      'orders': orders
+    }
+    return render(request, 'order-detail.html', context)

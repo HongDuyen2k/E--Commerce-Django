@@ -28,7 +28,10 @@
         <link rel="stylesheet" href="{% static '' %}css/helper.css">
         <link rel="stylesheet" href="{% static '' %}style.css">
         <link rel="stylesheet" href="{% static '' %}css/responsive.css">
-        <script src={% static '' %}"js/vendor/modernizr-2.8.3.min.js"></script>
+        {% comment %} <script src={% static '' %}"js/vendor/modernizr-2.8.3.min.js"></script> {% endcomment %}
+        
+        {% block script_header %}
+        {% endblock script_header %}
     </head>
     <body>
         <div class="body-wrapper">
@@ -162,6 +165,9 @@
                                                         </a>
                                                         <a href="{% url 'order_cart_product' %}" class="li-button li-button-fullwidth">
                                                             <span>Đặt hàng</span>
+                                                        </a>
+                                                        <a href="{% url 'order_detail' %}" class="li-button li-button-fullwidth li-button-dark">
+                                                            <span>Sản phẩm đã mua</span>
                                                         </a>
                                                     </div>
                                                 </div>

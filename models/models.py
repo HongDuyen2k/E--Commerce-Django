@@ -288,7 +288,7 @@ class Feedback(models.Model):
 
 class Order(models.Model):
     totalPriceBefore = models.FloatField()
-    totalPriceAfter = models.FloatField()
+    totalPriceAfter = models.IntegerField()
     information = models.TextField()
     note = models.TextField()
     status = models.CharField(max_length=40, choices=STATUS_ORDER)

@@ -4,6 +4,11 @@
 {% load django_template_maths %}
 {% load custom_cart_tags %}
 
+{% block script_header %}
+    <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+{% endblock script_header %}
+
 {% block content %}
 
 <div class="breadcrumb-area">
@@ -33,22 +38,13 @@
             <div class="col-lg-6 col-12">
                 <form method="POST" action="{% url 'payment_now' %}">
                     {% csrf_token %}
-                    <div class="checkbox-form">
-                        <h3>Hình thức thanh toán sản phẩm</h3>
-                        <div class="row">
-                       
-                            <div class="col-md-6">
-                                <h5>Hình thức thanh toán</h5>
-                                <select class="nice-select" name="payment">
-                                    <option value="Cash">Thanh toán khi nhận được sản phẩm</option>
-                                    <option value="Credit">Thanh toán online</option>
-                                </select>
-                            </div>
-
-                            <button type="submit" class="btn btn-outline-info mt-3 w-100">Thanh toán</button>
-                        </div>  
-                    </div>
+                    <button type="submit" class="btn btn-outline-info mt-3 w-100">Thanh toán khi nhận được sản phẩm</button>
                 </form>
+
+                <section>
+                    {% csrf_token %}
+                    <button type="button" id="checkout-button" class="btn btn-outline-primary mt-3 w-100">Thanh toán online</button>
+                </section>
             </div>
             <div class="col-lg-6 col-12">
                 <div class="your-order">
@@ -84,10 +80,10 @@
                                 </tr>
                                 <tr class="order-total">
                                     <th>Tổng tiền phải thanh toán:</th>
-                                    <td><strong><span class="amount">{{ total_amount_after }} VND</span></strong></td>
-                                </tr>
+                                    <td><strong><span class="amount">{{ total_amount_after|intcomma }} VND</span></strong></td>
+                                </tr>    
                             </tfoot>
-                        </table>
+                        </table>        
                     </div>
                 </div>
             </div>
@@ -95,5 +91,34 @@
     </div>
 </div>      
 
+<script type="text/javascript">
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    // Create an instance of the Stripe object with your publishable API key
+    var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+    var checkoutButton = document.getElementById("checkout-button");
+    checkoutButton.addEventListener("click", function () {
+      fetch("{% url 'create-checkout-session' user.id %}", {
+        method: "POST",
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+      })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (session) {
+          return stripe.redirectToCheckout({ sessionId: session.id });
+        })
+        .then(function (result) {
+          if (result.error) {
+            alert(result.error.message);
+          }
+        })
+        .catch(function (error) {
+          console.error("Error:", error);
+        });
+    });
+
+</script>
             
 {% endblock content %}
